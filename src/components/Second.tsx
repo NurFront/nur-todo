@@ -2,24 +2,22 @@ import React, { useState, useEffect } from "react";
 import './css/Second.css';
 
 const Second = () => {
-    const [time, setTime] = useState(0); // Время в секундах
-    const [isRunning, setIsRunning] = useState(false); // Состояние таймера (запущен/остановлен)
-    const [minutes, setMinutes] = useState(""); // Ввод минут
-    const [seconds, setSeconds] = useState(""); // Ввод секунд
+    const [time, setTime] = useState(0);
+    const [isRunning, setIsRunning] = useState(false);
+    const [minutes, setMinutes] = useState("");
+    const [seconds, setSeconds] = useState("");
 
-    // Эффект для уменьшения времени каждую секунду
     useEffect(() => {
         if (isRunning && time > 0) {
             const timerId = setInterval(() => {
                 setTime((prevTime) => prevTime - 1);
             }, 1000);
-            return () => clearInterval(timerId); // Очистка таймера
+            return () => clearInterval(timerId);
         } else if (time === 0) {
-            setIsRunning(false); // Останавливаем таймер при нуле
+            setIsRunning(false);
         }
     }, [isRunning, time]);
 
-    // Обработчик для добавления времени
     const handleAddTime = () => {
         const min = parseInt(minutes, 10);
         const sec = parseInt(seconds, 10);
@@ -37,14 +35,12 @@ const Second = () => {
         }
     };
 
-    // Обработчик кнопки старт/пауза
     const toggleTimer = () => {
         if (time > 0) {
             setIsRunning((prev) => !prev);
         }
     };
 
-    // Обработчик сброса таймера
     const resetTimer = () => {
         setIsRunning(false);
         setTime(0);
