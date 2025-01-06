@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/nur-todo/static/css/main.9a00d095.css",
+    "main.js": "/nur-todo/static/js/main.48aa1a7f.js",
+    "index.html": "/nur-todo/index.html",
+    "main.9a00d095.css.map": "/nur-todo/static/css/main.9a00d095.css.map",
+    "main.48aa1a7f.js.map": "/nur-todo/static/js/main.48aa1a7f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9a00d095.css",
+    "static/js/main.48aa1a7f.js"
+  ]
+}
