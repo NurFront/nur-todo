@@ -4,23 +4,22 @@ import './css/Task.css';
 const Task: FC = () => {
     const [addAll, setAddAll] = useState(false);
     const [btnAll, setBtnAll] = useState(true);
-    const [tasks, setTasks] = useState<{ text: string; isCompleted: boolean }[]>([]);
+    const [tasks, setTasks] = useState<{ text: string; isCompleted: boolean; isEditing?: boolean }[]>([]);
     const [taskInput, setTaskInput] = useState<string>('');
 
-    // Загружаем задачи из localStorage при монтировании компонента
     useEffect(() => {
         const savedTasks = localStorage.getItem('tasks');
         if (savedTasks) {
-            setTasks(JSON.parse(savedTasks)); // Если задачи есть, устанавливаем их в состояние
+            setTasks(JSON.parse(savedTasks));
         }
     }, []);
 
-    // Сохраняем задачи в localStorage, когда они изменяются
     useEffect(() => {
         if (tasks.length > 0) {
-            localStorage.setItem('tasks', JSON.stringify(tasks)); // Сохраняем задачи в localStorage
+            localStorage.setItem('tasks', JSON.stringify(tasks));
         }
     }, [tasks]);
+
 
     const closeInput = () => {
         setAddAll(false);
@@ -35,7 +34,7 @@ const Task: FC = () => {
     const addTask = () => {
         if (taskInput.trim() !== '') {
             const newTask = { text: taskInput, isCompleted: false };
-            setTasks(prevTasks => [...prevTasks, newTask]); // Добавляем новую задачу в состояние
+            setTasks(prevTasks => [...prevTasks, newTask]);
             setTaskInput('');
         }
     };
@@ -53,15 +52,39 @@ const Task: FC = () => {
         }
     };
 
-    // Функция для удаления задачи
     const deleteTask = (index: number) => {
-        const updatedTasks = tasks.filter((_, i) => i !== index); // Удаляем задачу по индексу
-        setTasks(updatedTasks); // Обновляем состояние задач
+        const updatedTasks = tasks.filter((_, i) => i !== index);
+        setTasks(updatedTasks);
+        localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     };
+    const editTask = (index: number) => {
+        const updatedTasks = tasks.map((task, i) =>
+            i === index ? { ...task, isEditing: true } : task
+        );
+        setTasks(updatedTasks);
+    };
+
+    const saveEditedTask = (index: number, newText: string) => {
+        const updatedTasks = tasks.map((task, i) =>
+            i === index ? { ...task, text: newText, isEditing: false } : task
+        );
+        setTasks(updatedTasks);
+    };
+
+    const cancelEditing = (index: number) => {
+        const updatedTasks = tasks.map((task, i) =>
+            i === index ? { ...task, isEditing: false } : task
+        );
+        setTasks(updatedTasks);
+    };
+
+    const completedTasks = tasks.filter(task => task.isCompleted).length;
+    const totalTasks = tasks.length;
 
     return (
         <>
-        <h1 className="task-titles">NUR ToDo</h1>
+            <h1 className="task-titles">NUR ToDo</h1>
+            <p className="task-stats">Задачи выполнены: {completedTasks} из {totalTasks}</p>
             <div className="task-container">
                 <ul className="task-list">
                     {tasks.map((task, index) => (
@@ -77,13 +100,39 @@ const Task: FC = () => {
                                 onChange={() => toggleCompletion(index)}
                             />
                             <label htmlFor={`taskCheckbox-${index}`} className="checkbox-label"></label>
-                            <span>{task.text}</span>
+                            {task.isEditing ? (
+                                <input
+                                    type="text"
+                                    defaultValue={task.text}
+                                    onBlur={(e) => saveEditedTask(index, e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            saveEditedTask(index, e.currentTarget.value);
+                                        } else if (e.key === 'Escape') {
+                                            cancelEditing(index);
+                                        }
+                                    }}
+                                    className="edit-input"
+                                    autoFocus
+                                />
+                            ) : (
+                                <span>{task.text}</span>
+                            )}
+                            {!task.isEditing && (
+                                <button
+                                    onClick={() => editTask(index)}
+                                    className="edit-button"
+                                >
+                                    ✎
+                                </button>
+                            )}
                             <button
                                 onClick={() => deleteTask(index)}
                                 className="delete-button"
                             >
                                 x
                             </button>
+
                         </li>
                     ))}
                 </ul>
@@ -118,14 +167,6 @@ const Task: FC = () => {
             {btnAll && <button onClick={addBtn} className="add-all-button">
                 +⠀⠀Добавить задачу
             </button>}
-
-            <div className="planner"></div>
-            <div className="sidebar-planner"></div>
-
-            <div className='opisanie'>
-            Приложение To Do — единый центр для личных задач в NUR ToDo. Оно тесно интегрировано с центрами NUR Studio. Задачи, созданные в этих продуктах, синхронизируются с To Do, чтобы вы могли обращаться к ним и управлять ими на разных устройствах.
-            Добавляйте свои задачи и сделайте это!
-            </div>
         </>
     );
 };

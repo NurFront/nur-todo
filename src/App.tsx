@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import Second from './components/Second';
 import Task from './components/Task'
 
 const App = () => {
@@ -7,6 +8,9 @@ const App = () => {
   return (
     <div>
       <Task />
+      <Second />
+      <div className='planner'></div>
+      <div className='sidebar-planner'></div>
     </div>
   );
 };
