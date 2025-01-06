@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import './css/Task.css';
 
 const Task: FC = () => {
@@ -6,6 +6,21 @@ const Task: FC = () => {
     const [btnAll, setBtnAll] = useState(true);
     const [tasks, setTasks] = useState<{ text: string; isCompleted: boolean }[]>([]);
     const [taskInput, setTaskInput] = useState<string>('');
+
+    // Загружаем задачи из localStorage при монтировании компонента
+    useEffect(() => {
+        const savedTasks = localStorage.getItem('tasks');
+        if (savedTasks) {
+            setTasks(JSON.parse(savedTasks)); // Если задачи есть, устанавливаем их в состояние
+        }
+    }, []);
+
+    // Сохраняем задачи в localStorage, когда они изменяются
+    useEffect(() => {
+        if (tasks.length > 0) {
+            localStorage.setItem('tasks', JSON.stringify(tasks)); // Сохраняем задачи в localStorage
+        }
+    }, [tasks]);
 
     const closeInput = () => {
         setAddAll(false);
@@ -19,7 +34,8 @@ const Task: FC = () => {
 
     const addTask = () => {
         if (taskInput.trim() !== '') {
-            setTasks([...tasks, { text: taskInput, isCompleted: false }]);
+            const newTask = { text: taskInput, isCompleted: false };
+            setTasks(prevTasks => [...prevTasks, newTask]); // Добавляем новую задачу в состояние
             setTaskInput('');
         }
     };
@@ -35,6 +51,12 @@ const Task: FC = () => {
         if (e.key === 'Enter') {
             addTask();
         }
+    };
+
+    // Функция для удаления задачи
+    const deleteTask = (index: number) => {
+        const updatedTasks = tasks.filter((_, i) => i !== index); // Удаляем задачу по индексу
+        setTasks(updatedTasks); // Обновляем состояние задач
     };
 
     return (
@@ -56,6 +78,12 @@ const Task: FC = () => {
                             />
                             <label htmlFor={`taskCheckbox-${index}`} className="checkbox-label"></label>
                             <span>{task.text}</span>
+                            <button
+                                onClick={() => deleteTask(index)}
+                                className="delete-button"
+                            >
+                                x
+                            </button>
                         </li>
                     ))}
                 </ul>
