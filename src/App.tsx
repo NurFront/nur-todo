@@ -1,14 +1,14 @@
 import React from 'react';
 import './App.css';
-import Second from './components/Second';
 import Task from './components/Task'
+import Sidebar from './components/Sidebar';
 
 const App = () => {
 
   return (
     <div>
       <Task />
-      <Second />
+      <Sidebar />
       <div className='planner'></div>
       <div className='sidebar-planner'></div>
     </div>

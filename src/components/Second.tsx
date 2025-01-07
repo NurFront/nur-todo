@@ -6,6 +6,8 @@ const Second = () => {
     const [isRunning, setIsRunning] = useState(false);
     const [minutes, setMinutes] = useState("");
     const [seconds, setSeconds] = useState("");
+    const alarmSound = new Audio(process.env.PUBLIC_URL + '/sound.mp3');
+
 
     useEffect(() => {
         if (isRunning && time > 0) {
@@ -13,10 +15,17 @@ const Second = () => {
                 setTime((prevTime) => prevTime - 1);
             }, 1000);
             return () => clearInterval(timerId);
-        } else if (time === 0) {
+        } else if (time === 0 && isRunning) {
             setIsRunning(false);
+            playAlarm();
         }
     }, [isRunning, time]);
+
+    const playAlarm = () => {
+        alarmSound.play().catch((err) => {
+            console.error("Не удалось воспроизвести звук:", err);
+        });
+    };
 
     const handleAddTime = () => {
         const min = parseInt(minutes, 10);
